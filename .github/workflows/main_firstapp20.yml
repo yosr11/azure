@@ -26,18 +26,22 @@ jobs:
 
       - name: Restore NuGet packages
         run: nuget restore
+        working-directory: ./ # Change this to the correct path to your solution file
 
       - name: Build solution
-        run: msbuild /nologo /verbosity:m /t:Build /p:Configuration=Release # Explicitly specify Release configuration
+        run: msbuild /nologo /verbosity:m /t:Build /p:Configuration=Release
+        working-directory: ./ # Update this as well
 
       - name: Publish to folder
         run: msbuild /nologo /verbosity:m /t:Publish /p:Configuration=Release /p:WebPublishMethod=FileSystem /p:publishUrl="\published\"
+        working-directory: ./ # Update this too
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: ASP-app
           path: '/published/**'
+          if-no-files-found: error
 
   deploy:
     runs-on: windows-latest
@@ -69,4 +73,3 @@ jobs:
           app-name: 'firstApp20'
           slot-name: 'Production'
           package: .
-          
