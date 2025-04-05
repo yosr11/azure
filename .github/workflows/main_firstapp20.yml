@@ -26,22 +26,15 @@ jobs:
 
       - name: Restore NuGet packages
         run: nuget restore
-        working-directory: ./ # Change this to the correct path to your solution file
-
-      - name: Build solution
-        run: msbuild /nologo /verbosity:m /t:Build /p:Configuration=Release
-        working-directory: ./ # Update this as well
 
       - name: Publish to folder
-        run: msbuild /nologo /verbosity:m /t:Publish /p:Configuration=Release /p:WebPublishMethod=FileSystem /p:publishUrl="\published\"
-        working-directory: ./ # Update this too
+        run: msbuild /nologo /verbosity:m /t:Build /t:pipelinePreDeployCopyAllFilesToOneFolder /p:_PackageTempDir="\published\"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: ASP-app
           path: '/published/**'
-          if-no-files-found: error
 
   deploy:
     runs-on: windows-latest
@@ -58,13 +51,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ASP-app
-
+      
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_391E2C98A7CF47989CE761E98CB82BFD }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_641DD25F6DC349DD946346FA2AFE29B0 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_DCE8506D2B6B41DBA945303E9BDDE94D }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_BACF78C9ADDF45F3AC1CF80CEAAB7381 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_6C03ADD9EF7F4DE0B43F6FD54849EE8C }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_26D09E520C3744A0BADC32AA8810B712 }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -73,3 +66,4 @@ jobs:
           app-name: 'firstApp20'
           slot-name: 'Production'
           package: .
+          
